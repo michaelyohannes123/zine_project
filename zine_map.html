@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+  <title>Zine Map</title>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+  <meta name='Set-Cookie' content='HttpOnly;Secure;SameSite=None'/>
+  <script src='zine_data.js'></script>
+  <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+  <script type='text/javascript' src='config.js'></script>
+  <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet'>
+  <link rel='preconnect' href='https://fonts.googleapis.com'>
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+  <link href='https://fonts.googleapis.com/css2?family=Hubballi&display=swap' rel='stylesheet'>
+  <style>
+    body,h1,h2,h3,h4,h5,h6 {
+      font-family: 'Hubballi', cursive;
+    }
+    body{
+      margin: 0;
+      padding: 0;
+      color: #000000;
+      background-color: #eba86d;
+      overflow: auto;
+    }
+    .map{
+      position: absolute;
+      margin: 0;
+      float: left;
+      width: 70%;
+      height: 100%;
+      z-index: -1;
+    }
+    .modal {
+      position: fixed;
+      overflow: auto;
+      right: 0;
+      top: 0;
+      width: 30%;
+      height: 100%;
+      color: #000000;
+      background-color: #eba86d;
+    }
+    .modal-content {
+      width: 50%;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .map_icon {
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+    }
+    .button{
+      color: #ffffff;
+      background-color: #b15e16;
+      border: none;
+      padding: 15px 32px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'Hubballi', cursive;
+      display: inline-block;
+      font-size: 100%;
+    }
+    .video{
+      display: none;
+      width: 100%;
+    }
+  </style>
+  <body>
+    <div id='map' class='map'></div>
+    <div class='modal'>
+      <div id='modal_content' class='modal-content'>
+        <br>
+        <h1 id='header'>Fighting Hard Times through Cuisine</h1>
+        <label id='label'>Zine project made by Michael Yohannes</label>
+        <br>
+        <br>
+        <button id='find_dish_button' onclick='explore()' class='button'>Find a Dish</button>
+        <br>
+        <br>
+        <img id='food_image' src='' style='display: none;' alt='Food image' width='100%' height='100%'>
+        <p id='main_text'>
+          Welcome! The subject of this zine project was to find culturally important dishes that were a product of hard times. I decided to choose 5 dishes from around the world. To explore, you can either use the button above to choose a random dish, or you can click the icons on the map to select a specific dish you want to see. Thanks for visiting!
+        </p>
+        <p id='recipe_video_text' style='display: none;'>Recipe Video:</p>
+        <iframe id='recipe_video' src='' class='video'>
+        </iframe>
+        <br>
+        <br>
+        <img id='food_image_event' src='' style='display: none;' alt='Food event' width='100%' height='100%'>
+        <p id="food_image_event_caption" style='display: none;'></p>
+      </div>
+    </div>
+    <script type='text/javascript'>
+      mapboxgl.accessToken = config.MAPBOX_ACCESS_TOKEN;
+      let map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/satellite-v9',
+        center: [10.383539765279636, 33.713879042028424],
+        interactive: true,
+        zoom: 0.77,
+        minZoom: 0,
+        maxZoom: 14
+      });
+      let geojson_features = [];
+      for(place in coordinates){
+        icon_size_per = 10;
+        place_feature =
+        {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': coordinates[place]
+            }
+        }
+        const el = document.createElement('div');
+        el.className = 'map_icon';
+        el.id = place_to_food[place];
+        el.style.backgroundImage = `url(${marker_icon_links[place_to_food[place]]})`;
+        el.style.width = `${icon_size_per}%`;
+        el.style.height = `${icon_size_per}%`;
+        el.style.display = 'block';
+        el.style.backgroundSize = '100%';
+        el.addEventListener('click', editCuisineModal);
+        new mapboxgl.Marker(el)
+          .setLngLat(coordinates[place])
+          .addTo(map);
+        geojson_features.push(place_feature);
+      }
+      const geojson = {
+        'type': 'FeatureCollection',
+        'features': geojson_features
+      };
+     function editCuisineModal(e){
+        let food_name = e.target.id;
+        let place_coordinates = coordinates[food_to_place[food_name]];
+        map.flyTo({
+          center: place_coordinates,
+          zoom: 7,
+          essential: true
+        });
+        document.getElementById('find_dish_button').innerHTML = 'Find Another Dish';
+        document.getElementById('header').innerHTML = food_name;
+        document.getElementById('label').innerHTML = food_labels[food_name];
+        document.getElementById('food_image').src = food_image_links[food_name];
+        document.getElementById('food_image').style.display = 'block';
+        document.getElementById('main_text').innerHTML = food_information[food_name];
+        document.getElementById('recipe_video_text').style.display = 'block';
+        document.getElementById('recipe_video').style.display = 'block';
+        document.getElementById('recipe_video').src = recipe_video_links[food_name];
+        document.getElementById('food_image_event').src = food_place_image_links[food_name];
+        document.getElementById('food_image_event').style.display = 'block';
+        document.getElementById('food_image_event_caption').innerHTML = food_image_event_captions[food_name];
+        document.getElementById('food_image_event_caption').style.display = 'block';
+     }
+     function explore(){
+        places = Object.keys(coordinates);
+        filtered_places = []
+        for(place_pos in places){
+          if(document.getElementById('header').innerHTML !== places[place_pos]){
+            filtered_places.push(places[place_pos]);
+          }
+        }
+        rand_pos = Math.floor(Math.random() * filtered_places.length);
+        editCuisineModal({'target': {'id': place_to_food[filtered_places[rand_pos]]}});
+     }
+    </script>
+  </body>
+</html>
