@@ -44,3 +44,4 @@ const food_image_event_captions = {
   'Korean Carrot Salad': 'Korean Carrots sold in Kuilyuk Bazaar, a large market in Uzbekistan.',
   'Kota Sandwich': 'People at the annual Kota Festival in Soweto Township, South Africa. Many people come out to eat kota sandwiches sold by local vendors.'
 };
+let KEY = 'pk.eyJ1IjoiY29tbXRyYWNrZXIiLCJhIjoiY2ptajV6ZnNsMDZxMTN3cWx1azVnYnZpdyJ9.yu2bfOHMRKWjzGOIC-6Jgw'

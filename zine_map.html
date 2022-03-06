@@ -6,7 +6,6 @@
   <meta name='Set-Cookie' content='HttpOnly;Secure;SameSite=None'/>
   <script src='zine_data.js'></script>
   <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
-  <script type='text/javascript' src='config.js'></script>
   <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
   <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet'>
@@ -95,7 +94,7 @@
       </div>
     </div>
     <script type='text/javascript'>
-      mapboxgl.accessToken = config.MAPBOX_ACCESS_TOKEN;
+      mapboxgl.accessToken = KEY;
       let map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/satellite-v9',
