@@ -159,7 +159,7 @@
         places = Object.keys(coordinates);
         filtered_places = []
         for(place_pos in places){
-          if(document.getElementById('header').innerHTML !== places[place_pos]){
+          if(document.getElementById('header').innerHTML !== place_to_food[places[place_pos]]){
             filtered_places.push(places[place_pos]);
           }
         }
